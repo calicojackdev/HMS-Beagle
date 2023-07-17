@@ -1,4 +1,4 @@
-from helpers import get_utc_now_string
+from helpers import get_utc_now_timestamp_string
 
 
 def get_sitemap_index_url(conn) -> list[tuple]:
@@ -31,6 +31,51 @@ def get_mens_synchilla_urls(conn) -> list[tuple]:
             AND hbp.group = 'synchilla' 
             AND hbp.gender = 'M'
         """
+    )
+    queryset = cursor.fetchall()
+    return queryset
+
+
+def get_last_two_mens_synchilla_stock_data_insert_dates(conn) -> list[tuple]:
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        SELECT DISTINCT split_part(insert_timestamp::TEXT,' ',1) AS insert_date
+        FROM hms_beagle.product_stock_data AS hbpsd
+        INNER JOIN hms_beagle.products AS hbp
+            ON hbpsd.product_id = hbp.id
+        WHERE hbp.group = 'synchilla' 
+            AND hbp.gender = 'M'
+        ORDER BY insert_date DESC
+        LIMIT 2
+        """
+    )
+    queryset = cursor.fetchall()
+    return queryset
+
+
+def get_mens_medium_synchilla_stock_data_by_date(conn, date: str) -> list[tuple]:
+    start_timestamp = date + " 00:00:00"
+    end_timestamp = date + " 23:59:59"
+
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        SELECT hbpsd.product_id
+            , hbpsd.color
+            , hbpsd.color_code
+            , hbpsd.scraped_from_url
+        FROM hms_beagle.product_stock_data AS hbpsd
+        INNER JOIN hms_beagle.products AS hbp
+            ON hbpsd.product_id = hbp.id
+        WHERE hbpsd.medium_in_stock = true
+            AND hbpsd.insert_timestamp 
+                BETWEEN %s AND %s
+            AND hbp.group = 'synchilla' 
+            AND hbp.gender = 'M'
+        ORDER BY hbpsd.insert_timestamp DESC
+        """,
+        [start_timestamp, end_timestamp],
     )
     queryset = cursor.fetchall()
     return queryset
@@ -74,7 +119,7 @@ def insert_scraped_data(conn, scraped_data: list[dict]) -> None:
     cursor = conn.cursor()
     print("Inserting stock data")
     for data in scraped_data:
-        data["insert_timestamp"] = get_utc_now_string()
+        data["insert_timestamp"] = get_utc_now_timestamp_string()
         cursor.execute(
             """
             INSERT INTO hms_beagle.product_stock_data(
