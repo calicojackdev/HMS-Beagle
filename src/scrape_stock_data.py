@@ -8,7 +8,7 @@ import time
 from ast import literal_eval
 
 from queries import get_mens_synchilla_urls, insert_scraped_data
-from helpers import get_utc_now_string, check_url, connect_to_db
+from helpers import get_utc_now_timestamp_string, check_url, connect_to_db
 
 
 def scrape_mens_synchilla_stock_data(conn) -> None:
@@ -19,7 +19,7 @@ def scrape_mens_synchilla_stock_data(conn) -> None:
     for result in mens_synchilla_queryset:
         url_to_scrape = result[1]
         product_id = result[2]
-        scrape_run_time = get_utc_now_string()
+        scrape_run_time = get_utc_now_timestamp_string()
         scraped_data = []
         try:
             driver.get(url_to_scrape)
