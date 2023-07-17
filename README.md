@@ -1,10 +1,18 @@
-# HMS Beagle
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)  
+# HMS Beagle   
+![HMS Beagle in Straits of Magellan](https://digitalcollections.lib.washington.edu/digital/api/singleitem/image/fishimages/47233/default.jpg)  
 HMS Beagle was a British brig that surveyed South America and later Australia, commanded by Robert FitzRoy for the South American voyages. FitzRoy was the namesake of Mount Fitz Roy, the silhouette made famous by clothing company Patagonia.  
 
-This code scrapes Patagonia's website for stock details about the popular Snap-T Fleece.  
+This code is intended to automate checking for new colorways of Patagonia's Snap-T Fleece and notify if any are found.  
 
-## References and other links of interest  
+### File Blurbs
+`runner.py` scrape, then examine stock data  
+`scrape_stock_data.py` scrape Patagonia's website for stock details about the popular Snap-T Fleece  
+`examine_stock_data.py` compare stock data from the past two scrape runs to determine if any new colors in size medium have been added  
+`queries.py` db queries used across files  
+`helpers.py` miscellaneous functions  
+`parse_sitemap.py` for use in case of stale product urls  
+
+### References and other links of interest  
 [HMS Beagle Wikipedia](https://en.wikipedia.org/wiki/HMS_Beagle)  
 [HMS Beagle, 1820-1870](https://www.jstor.org/stable/43707188)  
 [Francisco Moreno](https://fredericofreitas.org/2009/08/18/the-journeys-of-francisco-moreno/)  
