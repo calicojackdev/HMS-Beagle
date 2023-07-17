@@ -12,7 +12,7 @@ This code is intended to automate checking for new colorways of Patagonia's Snap
 `helpers.py` miscellaneous functions  
 `parse_sitemap.py` for use in case of stale product urls  
 
-### References and other links of interest  
+### Links of Interest 
 [HMS Beagle Wikipedia](https://en.wikipedia.org/wiki/HMS_Beagle)  
 [HMS Beagle, 1820-1870](https://www.jstor.org/stable/43707188)  
 [Francisco Moreno](https://fredericofreitas.org/2009/08/18/the-journeys-of-francisco-moreno/)  
