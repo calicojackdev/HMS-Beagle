@@ -1,13 +1,36 @@
-# TODO: write tests, mock db data
+from sendgrid.helpers.mail.exceptions import SendGridException
 
 from queries import (
     get_mens_medium_synchilla_stock_data_by_date,
     get_last_two_mens_synchilla_stock_data_insert_dates,
 )
 from helpers import connect_to_db
+from notify import send_mail
 
 
-def examine_stock_data_for_new_mens_medium_synchilla_colors(conn) -> list:
+def build_notification_message(new_stock_data: set) -> str:
+    notifications = ["New stock data found:"]
+    products = list(set([p[4] for p in new_stock_data]))
+    for product in products:
+        product_url = list(
+            set(
+                [
+                    psd[3]
+                    for psd in filter(lambda nsd: nsd[4] == product, new_stock_data)
+                ]
+            )
+        )[0]
+        product_colors = ", ".join(
+            [psd[1] for psd in filter(lambda nsd: nsd[4] == product, new_stock_data)]
+        )
+        product_notification = (
+            f"<a href='{product_url}'>{product}</a> | {product_colors}"
+        )
+        notifications.append(product_notification)
+    return "<br>".join(notifications)
+
+
+def get_recent_mens_medium_synchilla_stock_data(conn) -> dict[set]:
     last_two_mens_synchilla_stock_data_insert_dates = (
         get_last_two_mens_synchilla_stock_data_insert_dates(conn)
     )
@@ -19,30 +42,33 @@ def examine_stock_data_for_new_mens_medium_synchilla_colors(conn) -> list:
     previous_mens_medium_synchilla_stock_data = set(
         get_mens_medium_synchilla_stock_data_by_date(conn, previous_insert_date)
     )
-    if (
-        latest_mens_medium_synchilla_stock_data
-        != previous_mens_medium_synchilla_stock_data
-    ) and latest_mens_medium_synchilla_stock_data.difference(
-        previous_mens_medium_synchilla_stock_data
-    ):
-        print("New Medium Men's Synchilla stock data found:")
-        for (
-            new_mens_medium_synchilla_stock_data
-        ) in latest_mens_medium_synchilla_stock_data.difference(
-            previous_mens_medium_synchilla_stock_data
-        ):
-            print(
-                f"{new_mens_medium_synchilla_stock_data[1]} | {new_mens_medium_synchilla_stock_data[3]}"
-            )
+    recent_mens_medium_synchilla_stock_data = {
+        "latest_stock_data": latest_mens_medium_synchilla_stock_data,
+        "previous_stock_data": previous_mens_medium_synchilla_stock_data,
+    }
+    return recent_mens_medium_synchilla_stock_data
 
-    elif (
-        latest_mens_medium_synchilla_stock_data
-        == previous_mens_medium_synchilla_stock_data
-    ):
-        print("No new Men's Medium Synchilla stock data found")
+
+def examine_stock_data(recent_stock_data: dict[set]) -> set | None:
+    latest_stock_data = recent_stock_data["latest_stock_data"]
+    previous_stock_data = recent_stock_data["previous_stock_data"]
+    new_stock_data = latest_stock_data.difference(previous_stock_data)
+    if (latest_stock_data != previous_stock_data) and new_stock_data:
+        notification_message = build_notification_message(new_stock_data)
+        try:
+            send_mail(notification_message)
+        except SendGridException as sge:
+            print(sge)
+            print(notification_message)
+    elif latest_stock_data == previous_stock_data:
+        print("No new stock data found")
+    return new_stock_data
 
 
 if __name__ == "__main__":
     conn = connect_to_db()
-    examine_stock_data_for_new_mens_medium_synchilla_colors(conn)
+    recent_mens_medium_synchilla_stock_data = (
+        get_recent_mens_medium_synchilla_stock_data(conn)
+    )
+    examine_stock_data(recent_mens_medium_synchilla_stock_data)
     conn.close()

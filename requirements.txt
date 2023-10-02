@@ -3,3 +3,5 @@ bs4
 selenium
 requests
 psycopg2
+sendgrid
+dotenv

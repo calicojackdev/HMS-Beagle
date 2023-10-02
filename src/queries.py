@@ -65,6 +65,7 @@ def get_mens_medium_synchilla_stock_data_by_date(conn, date: str) -> list[tuple]
             , hbpsd.color
             , hbpsd.color_code
             , hbpsd.scraped_from_url
+            , hbp.name
         FROM hms_beagle.product_stock_data AS hbpsd
         INNER JOIN hms_beagle.products AS hbp
             ON hbpsd.product_id = hbp.id

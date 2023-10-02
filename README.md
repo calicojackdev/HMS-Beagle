@@ -10,7 +10,8 @@ This code is intended to automate checking for new colorways of Patagonia's Snap
 `examine_stock_data.py` compare stock data from the past two scrape runs to determine if any new colors in size medium have been added  
 `queries.py` db queries used across files  
 `helpers.py` miscellaneous functions  
-`parse_sitemap.py` for use in case of stale product urls  
+`sitemap.py` for use in case of stale product urls  
+`notify.py` notification logic  
 
 ### Links of Interest 
 [HMS Beagle Wikipedia](https://en.wikipedia.org/wiki/HMS_Beagle)  
