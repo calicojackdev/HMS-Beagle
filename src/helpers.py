@@ -1,12 +1,15 @@
 import datetime
 import requests
 import os
+
 import psycopg2 as pg
+from dotenv import load_dotenv
 
+load_dotenv()
 
-db_name = os.environ["postgres_db_name"]
-db_user = os.environ["postgres_user"]
-db_pwd = os.environ["postgres_pwd"]
+db_name = os.environ["POSTGRES_DB_NAME"]
+db_user = os.environ["POSTGRES_USER"]
+db_pwd = os.environ["POSTGRES_PWD"]
 
 
 def get_utc_now_timestamp_string() -> str:
